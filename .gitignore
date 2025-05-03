@@ -1,0 +1,85 @@
+# Dependency directories
+node_modules/
+.pnpm/
+package-lock.json
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Build directories
+dist/
+build/
+.temp/
+.cache/
+
+# Local storage
+.localstorage/
+
+# Debug files
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Babel/Browserlist cache
+.babel-cache/
+
+# Vue CLI
+.vue-cli/
+.vue-cli-*
+
+# ESLint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# IDE specific files
+*.iml
+*.ipr
+*.iws
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# Jest
+jest-results.json
+/junit.xml
+
+# Local Netlify folder
+.netlify
+
+# Vite cache
+.cache/
+.temp/
