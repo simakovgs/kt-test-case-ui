@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <h2>Форма ввода серийных номеров</h2>
+    <h2>Форма добавления оборудования</h2>
     
     <form @submit.prevent="submitForm">
       <div class="form-group">
@@ -46,7 +46,17 @@
           Ожидаемый формат: {{ selectedEquipmentMask }}
         </div>
       </div>
-      
+
+      <div class="form-group">
+        <label for="note">Примечание:</label>
+        <textarea
+          id="note"
+          v-model="form.note"
+          rows="5"
+          placeholder=""
+        ></textarea>
+      </div>
+
       <button type="submit" :disabled="isSubmitting">
         {{ isSubmitting ? 'Отправка...' : 'Отправить' }}
       </button>
@@ -69,7 +79,8 @@ export default {
       
       form: {
         equipmentTypeId: '',
-        serialNumbers: ''
+        serialNumbers: '',
+        note: ''
       },
       equipmentTypes: [],
       errors: {
@@ -119,6 +130,7 @@ export default {
         this.isLoading = false
       }
     },
+    
     validateForm() {
       let valid = true
       
@@ -139,32 +151,12 @@ export default {
       return valid
     },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     async submitForm() {
       if (!this.validateForm()) return
       
       this.isSubmitting = true
       
       try {
-        // Подготовка данных для отправки
         const serialsArray = this.form.serialNumbers
           .split('\n')
           .map(s => s.trim())
@@ -175,16 +167,11 @@ export default {
         for (let i = 0; i < serialsArray.length; i++) {
           const object_to_create = {
             serial_number: serialsArray[i],
-            type_id: this.form.equipmentTypeId
+            type_id: this.form.equipmentTypeId,
+            note: this.form.note
           }
           payload.push(object_to_create)
         }
-
-        
-
-
-        
-        // Пример реального запроса (раскомментируйте когда будет готов бэкенд)
         
         const response = await fetch('http://localhost:8000/api/equipment/', {
           method: 'POST',
@@ -198,8 +185,31 @@ export default {
         
         if (!response.ok) throw new Error('Ошибка отправки данных')
         const result = await response.json()
-        this.result = result
         
+        const created_objects_count = result.created_count
+        const created_objects_serial_numbers = []
+        const errors = []
+
+        for (let i = 0; i < result.created_count; i++) {
+          const created_object_serial_number = result.created_objects[i].serial_number
+          created_objects_serial_numbers.push(created_object_serial_number)
+        }
+
+        for (let i = 0; i < result.errors.length; i++) {
+          const error_object_index = result.errors[i].index + 1
+          const error_object_data = result.errors[i].errors
+          const error_info = {
+            'Номер элемента': error_object_index,
+            'Информация об ошибке': error_object_data
+          }
+          errors.push(error_info)
+        }
+
+        this.result = {
+          'Создано объектов': created_objects_count,
+          'Добавленые серийные номера': created_objects_serial_numbers,
+          'Ошибки': errors,
+        }
                 
       } catch (error) {
         console.error('Ошибка отправки:', error)
@@ -223,14 +233,17 @@ export default {
   border: 1px solid #ddd;
   border-radius: 8px;
 }
+
 .form-group {
   margin-bottom: 20px;
 }
+
 label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
 }
+
 select, textarea {
   width: 100%;
   padding: 10px;
@@ -238,21 +251,25 @@ select, textarea {
   border-radius: 4px;
   font-size: 16px;
 }
+
 textarea {
   font-family: monospace;
   min-height: 100px;
 }
+
 .error {
   color: #d32f2f;
   font-size: 14px;
   margin-top: 5px;
 }
+
 .hint {
   color: #666;
   font-size: 14px;
   margin-top: 5px;
   font-style: italic;
 }
+
 button {
   background-color: #1976d2;
   color: white;
@@ -262,24 +279,30 @@ button {
   cursor: pointer;
   font-size: 16px;
 }
+
 button:hover {
   background-color: #1565c0;
 }
+
 button:disabled {
   background-color: #90caf9;
   cursor: not-allowed;
 }
+
 .load-btn {
   background-color: #4caf50;
   padding: 8px 12px;
   font-size: 14px;
 }
+
 .load-btn:hover {
   background-color: #388e3c;
 }
+
 .load-btn:disabled {
   background-color: #81c784;
 }
+
 .submitted-data {
   margin-top: 30px;
   padding: 15px;
@@ -287,6 +310,7 @@ button:disabled {
   border-radius: 4px;
   text-align: left;
 }
+
 pre {
   white-space: pre-wrap;
   word-wrap: break-word;
