@@ -112,8 +112,6 @@
 export default {
   data() {
     return {
-      accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2ODgxNTYyLCJpYXQiOjE3NDYyNzY3NjIsImp0aSI6IjlhY2JlODVmOTAwYjQ0NDU5MWQyMmQxYTJhZDI2OGMzIiwidXNlcl9pZCI6MX0.ja5VAOxMBkgZT2-TT-Cl_dL4d3a82MPZ8XKJjxUIcWU',
-      csrfToken: 'eDb3rEBPUJjRhjcLbWAVWYLvioTyoYTN',
       searchQuery: '',
       selectedEquipment: null,
       editMode: true,
@@ -143,55 +141,104 @@ export default {
     selectedEquipmentType() {
       if (!this.form.equipmentTypeId) return null;
       return this.equipmentTypes.find(type => type.id === this.form.equipmentTypeId);
+    },
+    isAuthSucess(){
+      return localStorage.authStatus
     }
   },
   
   methods: {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     async handeSearchBySN() {
+
       try {
-        const responseEquipmentBySN = await fetch(`http://localhost:8000/api/equipment/serial-number/${this.searchQuery}`, {
+        const responseEquipmentBySN = await fetch(`${process.env.VUE_APP_API_URL}/equipment/serial-number/${this.searchQuery}`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${localStorage.accessToken}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
         })
+
+
+
+
 
         if (!responseEquipmentBySN.ok) throw new Error(`HTTP error: ${responseEquipmentBySN.status}`)
 
         const dataEquipmentBySN = await responseEquipmentBySN.json()
+        console.log('dataEquipmentBySN')
+        console.log(dataEquipmentBySN)
+
+
+
 
         const responseType = await fetch(dataEquipmentBySN.type, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${localStorage.accessToken}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
         })
 
+
+
+
+
+
         if (!responseType.ok) throw new Error(`HTTP error: ${responseType.status}`)
 
         const dataType = await responseType.json()
+        console.log('dataType')
+        console.log(dataType)
         
         dataEquipmentBySN.type_name = dataType.name
         dataEquipmentBySN.type = dataType.id
 
         this.mockResults.push(dataEquipmentBySN)
 
-        const responseEquipmentTypes = await fetch('http://localhost:8000/api/equipment_type/', {
+        const responseEquipmentTypes = await fetch(`${process.env.VUE_APP_API_URL}/equipment_type/`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${localStorage.accessToken}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
         })
 
+
+
         if (!responseEquipmentTypes.ok) throw new Error(`HTTP error: ${responseEquipmentTypes.status}`)
 
         const dataEquipmentTypes = await responseEquipmentTypes.json()
+        console.log('dataEquipmentTypes')
+        console.log(dataEquipmentTypes)
+
+
+
         this.equipmentTypes = dataEquipmentTypes.results
 
       } catch (error) {
@@ -201,27 +248,54 @@ export default {
       }
     },
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     async handeSearchByNote() {
       try {
-        const responseEquipmentByNote = await fetch(`http://localhost:8000/api/equipment/note/${this.searchQuery}`, {
+        const responseEquipmentByNote = await fetch(`${process.env.VUE_APP_API_URL}/equipment/note/${this.searchQuery}`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${localStorage.accessToken}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
         })
 
+
+
+
         if (!responseEquipmentByNote.ok) throw new Error(`HTTP error: ${responseEquipmentByNote.status}`)
 
         const dataEquipmentByNote = await responseEquipmentByNote.json()
+        console.log('dataEquipmentByNote')
+        console.log(dataEquipmentByNote)
+
+
         
         for (let i = 0; i < dataEquipmentByNote.length; i++) {
           const data = dataEquipmentByNote[i];
           const responseType = await fetch(data.type, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${this.accessToken}`,
+              'Authorization': `Bearer ${localStorage.accessToken}`,
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             }
@@ -230,6 +304,8 @@ export default {
           if (!responseType.ok) throw new Error(`HTTP error: ${responseType.status}`)
 
           const dataType = await responseType.json()
+          console.log('dataType')
+          console.log(dataType)
           
           data.type_name = dataType.name
           data.type = dataType.id
@@ -237,18 +313,23 @@ export default {
           this.mockResults.push(data);
         }
 
-        const responseEquipmentTypes = await fetch('http://localhost:8000/api/equipment_type/', {
+        const responseEquipmentTypes = await fetch(`${process.env.VUE_APP_API_URL}/equipment_type/`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${localStorage.accessToken}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
         })
 
+
+
         if (!responseEquipmentTypes.ok) throw new Error(`HTTP error: ${responseEquipmentTypes.status}`)
 
         const dataEquipmentTypes = await responseEquipmentTypes.json()
+        console.log('dataEquipmentTypes')
+        console.log(dataEquipmentTypes)
+
         this.equipmentTypes = dataEquipmentTypes.results
 
       } catch (error) {
@@ -274,17 +355,21 @@ export default {
           note: this.form.notes
         }
 
-        const response = await fetch(`http://localhost:8000/api/equipment/${this.form.id}/`, {
+        const response = await fetch(`${process.env.VUE_APP_API_URL}/equipment/${this.form.id}/`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
-            'X-CSRFTOKEN': this.csrfToken
+            'Authorization': `Bearer ${localStorage.accessToken}`,
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload)
         })
 
+              
+
         const result = await response.json()
+        console.log('result')
+        console.log(result)
+
         if ("errors" in result) {
           this.result_message = "Ошибка при обновлении";
         } else {
@@ -302,14 +387,15 @@ export default {
       this.result = null
       this.result_message = null
       try {
-        await fetch(`http://localhost:8000/api/equipment/${this.form.id}/`, {
+        await fetch(`${process.env.VUE_APP_API_URL}/equipment/${this.form.id}/`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
-            'X-CSRFTOKEN': this.csrfToken
+            'Authorization': `Bearer ${localStorage.accessToken}`,
+            'Content-Type': 'application/json'
           },
         })
+
+
 
         this.selectedEquipment = null;
         this.form = {

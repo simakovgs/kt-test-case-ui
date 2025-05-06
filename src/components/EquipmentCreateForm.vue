@@ -271,7 +271,7 @@ textarea {
 }
 
 button {
-  background-color: #1976d2;
+  background-color: #4caf50;
   color: white;
   padding: 12px 20px;
   border: none;

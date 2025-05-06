@@ -1,7 +1,9 @@
 <template>
+      <h1>Equipment Manager</h1>
+      <h4>KT test case</h4>
+  <LoginPage/>
   <div id="app">
-    <h1>Equipment Manager</h1>
-    <h4>KT test case</h4>
+
 
     <div class="components-container">
       <EquipmentCreateForm id="create-form" class="left-component"/>
@@ -13,13 +15,15 @@
 <script>
 import EquipmentCreateForm from './components/EquipmentCreateForm.vue'
 import EquipmentInfo from './components/EquipmentInfo.vue'
+import LoginPage from './components/LoginPage.vue'
 
 export default {
   name: 'App',
   components: {
     EquipmentCreateForm,
-    EquipmentInfo
-  }
+    EquipmentInfo,
+    LoginPage
+  },
 }
 </script>
 
